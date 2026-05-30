@@ -1,0 +1,618 @@
+/* ==========================================================
+   KiloMeter – Login Page
+   Design: Dark navy left panel + white right panel with tabs
+   Theme: Blue accent, Syne display font, DM Sans body
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   1. TOKENS
+---------------------------------------------------------- */
+:root {
+    --blue:        #2563eb;
+    --blue-dark:   #1d4ed8;
+    --blue-glow:   rgba(37,99,235,0.20);
+
+    --navy:          #0d1b2e;
+    --navy-mid:      #112240;
+    --navy-light:    #1a3356;
+    --navy-border:   rgba(255,255,255,0.08);
+
+    --white:         #ffffff;
+    --off-white:     #f8fafc;
+    --border:        #e8ecf0;
+    --text:          #1e293b;
+    --muted:         #94a3b8;
+
+    --font-display:  'Syne', sans-serif;
+    --font-body:     'DM Sans', sans-serif;
+
+    --card-radius:   18px;
+    --input-radius:  10px;
+    --btn-radius:    10px;
+    --t:             0.2s ease;
+}
+
+/* ----------------------------------------------------------
+   2. RESET & BASE
+---------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    height: 100%;
+    font-family: var(--font-body);
+    background: var(--navy);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: var(--font-body); cursor: pointer; }
+
+/* ----------------------------------------------------------
+   3. NAVBAR — restored from original
+---------------------------------------------------------- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 48px;
+    background: var(--navy);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 20px;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+}
+
+.navbar nav a {
+    margin: 0 14px;
+    text-decoration: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color var(--t);
+}
+
+.navbar nav a:hover { color: #ffffff; }
+
+.signup-btn {
+    background: var(--blue);
+    color: #ffffff !important;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background var(--t), transform var(--t);
+}
+
+.signup-btn:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+}
+
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+/* ----------------------------------------------------------
+   4. PAGE WRAPPER — full-height two-column split
+---------------------------------------------------------- */
+.page-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ----------------------------------------------------------
+   5. LEFT PANEL — dark navy with atmospheric glow
+---------------------------------------------------------- */
+.left-panel {
+    flex: 1.1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--navy);
+    padding: 60px 56px;
+    animation: fadeIn 0.7s ease both;
+}
+
+/* Atmospheric radial glows */
+.bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(80px);
+}
+.bg-glow-1 {
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%);
+    top: -120px; left: -100px;
+}
+.bg-glow-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(14,90,180,0.25) 0%, transparent 70%);
+    bottom: -80px; right: -60px;
+}
+
+/* Subtle dot grid texture */
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+
+.left-content {
+    position: relative;
+    z-index: 2;
+    max-width: 420px;
+}
+
+/* Brand / Logo */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 52px;
+}
+
+.brand-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: rgba(37,99,235,0.12);
+    border: 1px solid rgba(37,99,235,0.30);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--blue);
+}
+
+.brand-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.3px;
+}
+
+/* Headline */
+.left-headline h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 18px;
+}
+
+.accent-text {
+    color: var(--blue);
+}
+
+.left-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.65;
+    max-width: 340px;
+    margin-bottom: 52px;
+}
+
+/* Stats row */
+.stats-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+    padding: 24px 28px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--navy-border);
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+}
+
+.stat-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--navy-border);
+}
+
+/* Quote */
+.left-quote {
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.6;
+    border-left: 2px solid rgba(37,99,235,0.4);
+    padding-left: 16px;
+}
+
+/* ----------------------------------------------------------
+   5. RIGHT PANEL — white
+---------------------------------------------------------- */
+.right-panel {
+    flex: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--off-white);
+    padding: 48px 32px;
+    animation: slideInRight 0.6s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ----------------------------------------------------------
+   6. AUTH CARD
+---------------------------------------------------------- */
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--white);
+    border-radius: var(--card-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 20px 50px rgba(0,0,0,0.09);
+    overflow: hidden;
+}
+
+/* ----------------------------------------------------------
+   7. TABS
+---------------------------------------------------------- */
+.auth-tabs {
+    display: flex;
+    position: relative;
+    padding: 6px;
+    background: var(--off-white);
+    border-bottom: 1px solid var(--border);
+    gap: 4px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 11px 16px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 8px;
+    transition: color var(--t);
+    position: relative;
+    z-index: 1;
+}
+
+.tab-btn.active {
+    color: var(--blue);
+}
+
+/* Sliding pill indicator */
+.tab-indicator {
+    position: absolute;
+    top: 6px;
+    height: calc(100% - 12px);
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    transition: left 0.28s cubic-bezier(0.34,1.56,0.64,1), width 0.28s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ----------------------------------------------------------
+   8. TAB PANELS
+---------------------------------------------------------- */
+.tab-panel {
+    display: none;
+    padding: 28px 28px 24px;
+    animation: fadeInUp 0.3s ease both;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.form-header {
+    margin-bottom: 24px;
+}
+
+.form-header h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.form-header p {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* ----------------------------------------------------------
+   9. INPUTS
+---------------------------------------------------------- */
+.input-group {
+    margin-bottom: 14px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 13px;
+    color: var(--muted);
+    display: flex;
+    pointer-events: none;
+    transition: color var(--t);
+}
+
+.input-wrapper:focus-within .input-icon {
+    color: var(--blue);
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 13px 14px 13px 40px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--input-radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--off-white);
+    outline: none;
+    transition: border-color var(--t), box-shadow var(--t), background var(--t);
+}
+
+.input-wrapper input::placeholder { color: var(--muted); }
+
+.input-wrapper input:focus {
+    border-color: var(--blue);
+    background: var(--white);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    opacity: 0.5;
+    display: flex;
+    padding: 4px;
+    transition: opacity var(--t), color var(--t);
+}
+.toggle-password:hover { opacity: 1; color: var(--blue); }
+
+/* ----------------------------------------------------------
+   10. FORM OPTIONS ROW
+---------------------------------------------------------- */
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 6px 0 22px;
+}
+
+/* Custom checkbox */
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.remember-me input[type="checkbox"] {
+    display: none;
+}
+
+.custom-checkbox {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color var(--t), background var(--t);
+    flex-shrink: 0;
+}
+
+.remember-me input:checked + .custom-checkbox {
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.remember-me input:checked + .custom-checkbox::after {
+    content: '';
+    width: 9px; height: 5px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+}
+
+.forgot-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--t);
+}
+.forgot-link:hover { color: var(--blue); }
+
+/* ----------------------------------------------------------
+   11. PRIMARY BUTTON
+---------------------------------------------------------- */
+.login-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: var(--btn-radius);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background var(--t), transform var(--t), box-shadow var(--t);
+    box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+}
+
+.login-btn:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(37,99,235,0.45);
+}
+
+.login-btn:active { transform: translateY(0); }
+
+/* ----------------------------------------------------------
+   12. DIVIDER + SOCIAL
+---------------------------------------------------------- */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 16px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.social-row {
+    display: flex;
+    gap: 10px;
+}
+
+.social-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--btn-radius);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+}
+
+.social-btn:hover {
+    border-color: #c4c9d4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+}
+
+/* ----------------------------------------------------------
+   13. ANIMATIONS
+---------------------------------------------------------- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------------------------
+   14. RESPONSIVE
+---------------------------------------------------------- */
+@media (max-width: 900px) {
+    .left-panel { flex: 0.85; padding: 48px 36px; }
+    .left-headline h1 { font-size: 38px; }
+}
+
+@media (max-width: 680px) {
+    .navbar { padding: 14px 20px; flex-wrap: wrap; }
+    .nav-toggle { display: block; }
+    .navbar nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        padding: 10px 0 4px;
+        border-top: 1px solid rgba(255,255,255,0.07);
+        margin-top: 8px;
+        gap: 8px;
+    }
+    .navbar nav.nav-open { display: flex; }
+    .navbar nav a { margin: 0; padding: 6px 0; }
+    .page-wrapper { flex-direction: column; }
+
+    .left-panel {
+        padding: 40px 28px 36px;
+        min-height: auto;
+    }
+
+    .left-content { max-width: 100%; }
+
+    .left-headline h1 { font-size: 32px; }
+
+    .brand { margin-bottom: 32px; }
+
+    .stats-row { margin-bottom: 28px; }
+
+    .left-sub, .left-quote { display: none; }
+
+    .right-panel { padding: 32px 16px; }
+
+    .auth-card { border-radius: 14px; }
+}
+
+@media (max-width: 400px) {
+    .tab-panel { padding: 22px 18px 20px; }
+}
