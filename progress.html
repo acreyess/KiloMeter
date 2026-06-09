@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress — KiloMeter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-glow: rgba(37,99,235,0.18);
+      --slate: #0f172a;
+      --slate-mid: #1e293b;
+      --slate-border: #334155;
+      --slate-muted: #64748b;
+      --slate-light: #94a3b8;
+      --bg: #f1f5f9;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --green: #10b981;
+      --orange: #f97316;
+      --red: #ef4444;
+      --yellow: #eab308;
+      --sidebar-w: 240px;
+    }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+    }
+ 
+  
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--slate);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 24px;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      z-index: 100;
+    }
+ 
+    .sidebar-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px 32px;
+      letter-spacing: -0.4px;
+    }
+ 
+    .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
+ 
+    .nav { flex: 1; padding: 0 12px; }
+ 
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--slate-light);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+      margin-bottom: 2px;
+    }
+ 
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active { background: var(--blue); color: #fff; font-weight: 500; }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+ 
+    .sidebar-footer {
+      padding: 16px 16px 0;
+      border-top: 1px solid var(--slate-border);
+      margin-top: 16px;
+    }
+ 
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+    }
+ 
+    .avatar {
+      width: 34px; height: 34px;
+      background: var(--blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+ 
+    .user-info .name { font-size: 13px; font-weight: 500; color: #fff; }
+    .user-info .role { font-size: 11px; color: var(--slate-muted); }
+ 
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 8px;
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--slate-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: color 0.15s;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+    }
+    .logout-btn:hover { color: #fff; }
+ 
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 40px 48px;
+      min-height: 100vh;
+    }
+ 
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+ 
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--slate);
+      letter-spacing: -1px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+ 
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--slate-light);
+      margin-top: 4px;
+    }
+ 
+
+    .period-toggle {
+      display: flex;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      gap: 2px;
+    }
+ 
+    .period-btn {
+      padding: 7px 18px;
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--slate-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+ 
+    .period-btn.active {
+      background: var(--blue);
+      color: #fff;
+    }
+ 
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+ 
+    .stat-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 22px 24px;
+      border: 1.5px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.4s ease both;
+    }
+ 
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .stat-card .card-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--slate-light);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+ 
+    .stat-card .card-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--slate);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+ 
+    .stat-card .card-unit {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--slate-muted);
+      margin-left: 3px;
+    }
+ 
+    .stat-card .card-sub {
+      font-size: 12px;
+      color: var(--slate-light);
+      margin-top: 6px;
+    }
+ 
+    .stat-card .accent-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.4s 0.25s ease both;
+    }
+ 
+    .chart-card {
+      background: var(--white);
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      padding: 24px;
+    }
+ 
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+ 
+    .chart-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--slate);
+    }
+ 
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+    }
+ 
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--slate-muted);
+    }
+ 
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+ 
+    canvas { display: block; }
+ 
+    .empty-chart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 180px;
+      color: var(--slate-light);
+      font-size: 13px;
+      gap: 8px;
+    }
+ 
+    .empty-chart .empty-icon { font-size: 32px; }
+ 
+
+    .history-card {
+      background: var(--white);
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      padding: 24px;
+      animation: fadeUp 0.4s 0.35s ease both;
+    }
+ 
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+ 
+    .history-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--slate);
+    }
+ 
+    .history-count {
+      font-size: 12px;
+      color: var(--slate-muted);
+      background: var(--bg);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+ 
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+ 
+    thead th {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--slate-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 12px 12px;
+      text-align: left;
+      border-bottom: 1.5px solid var(--border);
+    }
+ 
+    tbody tr {
+      transition: background 0.12s;
+    }
+ 
+    tbody tr:hover { background: #f8fafc; }
+ 
+    tbody td {
+      padding: 13px 12px;
+      font-size: 13.5px;
+      color: var(--slate);
+      border-bottom: 1px solid var(--border);
+    }
+ 
+    tbody tr:last-child td { border-bottom: none; }
+ 
+    .intensity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+ 
+    .intensity-easy   { background: #f0fdf4; color: #16a34a; }
+    .intensity-moderate { background: #fff7ed; color: #ea580c; }
+    .intensity-hard   { background: #fef2f2; color: #dc2626; }
+ 
+    .cal-pill {
+      display: inline-block;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--orange);
+    }
+ 
+    .empty-state {
+      text-align: center;
+      padding: 52px 24px;
+      color: var(--slate-light);
+    }
+ 
+    .empty-state .e-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+    .empty-state a {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 9px 22px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+ 
+    .del-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #cbd5e1;
+      font-size: 15px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .del-btn:hover { color: var(--red); background: #fef2f2; }
+ 
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--slate);
+      color: #fff;
+      font-size: 13px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+ 
+    @media (max-width: 1100px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 24px 16px; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+ 
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-dot"></span> KiloMeter
+  </div>
+  <nav class="nav">
+    <a href="dashboard.html" class="nav-item">
+      <span class="icon">⊞</span> Dashboard
+    </a>
+    <a href="bmi.html" class="nav-item">
+      <span class="icon">⚖️</span> BMI Calculator
+    </a>
+    <a href="tracker.html" class="nav-item">
+      <span class="icon">🏃</span> Run Tracker
+    </a>
+    <a href="progress.html" class="nav-item active">
+      <span class="icon">📊</span> Progress
+    </a>
+    <a href="goals.html" class="nav-item">
+      <span class="icon">🎯</span> Goals
+    </a>
+    <a href="settings.html" class="nav-item">
+      <span class="icon">⚙</span> Settings
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar" id="avatarEl">AT</div>
+      <div class="user-info">
+        <div class="name" id="usernameEl">Athlete</div>
+        <div class="role">Runner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">⇠ Log out</button>
+  </div>
+</aside>
+ 
+<main class="main">
+ 
+  <div class="page-header">
+    <div>
+      <div class="page-title">📊 Progress</div>
+      <div class="page-subtitle">Your running stats at a glance — distance, duration &amp; calories burned.</div>
+    </div>
+    <div class="period-toggle">
+      <button class="period-btn active" data-period="week">Week</button>
+      <button class="period-btn" data-period="month">Month</button>
+      <button class="period-btn" data-period="all">All time</button>
+    </div>
+  </div>
+ 
+  <div class="stat-grid" id="statGrid">
+    <div class="stat-card">
+      <div class="card-label">Total Distance</div>
+      <div class="card-value" id="statDist">0<span class="card-unit">km</span></div>
+      <div class="card-sub" id="statDistSub">0 runs logged</div>
+      <div class="accent-bar" style="background: var(--blue);"></div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">Total Duration</div>
+      <div class="card-value" id="statDur">0<span class="card-unit">min</span></div>
+      <div class="card-sub" id="statDurSub">avg per run</div>
+      <div class="accent-bar" style="background: var(--green);"></div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">Calories Burned</div>
+      <div class="card-value" id="statCal">0<span class="card-unit">kcal</span></div>
+      <div class="card-sub" id="statCalSub">avg per run</div>
+      <div class="accent-bar" style="background: var(--orange);"></div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">Avg Pace</div>
+      <div class="card-value" id="statPace">—<span class="card-unit">min/km</span></div>
+      <div class="card-sub" id="statPaceSub">based on logged runs</div>
+      <div class="accent-bar" style="background: var(--yellow);"></div>
+    </div>
+  </div>
+ 
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Distance over time</span>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div> km</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> kcal ÷ 100</div>
+        </div>
+      </div>
+      <canvas id="distChart" height="180"></canvas>
+      <div class="empty-chart" id="distEmpty" style="display:none">
+        <div class="empty-icon">📉</div>
+        No runs in this period
+      </div>
+    </div>
+ 
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Intensity split</span>
+      </div>
+      <canvas id="intensityChart" height="180"></canvas>
+      <div class="empty-chart" id="intensityEmpty" style="display:none">
+        <div class="empty-icon">📉</div>
+        No runs yet
+      </div>
+    </div>
+  </div>
+ 
+  <div class="history-card">
+    <div class="history-header">
+      <span class="history-title">Run History</span>
+      <span class="history-count" id="runCount">0 runs</span>
+    </div>
+ 
+    <div id="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Distance</th>
+            <th>Duration</th>
+            <th>Calories</th>
+            <th>Intensity</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="runsTbody"></tbody>
+      </table>
+    </div>
+ 
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="e-icon">🏃</div>
+      <p>No runs logged yet.</p>
+      <a href="tracker.html">Log your first run →</a>
+    </div>
+  </div>
+ 
+</main>
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+const $ = id => document.getElementById(id);
+ 
+function showToast(msg, ms = 2400) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+ 
+function logout() {
+  localStorage.removeItem('km_username');
+  window.location.href = 'login.html';
+}
+ 
+const username = localStorage.getItem('km_username') || 'Athlete';
+$('usernameEl').textContent = username;
+$('avatarEl').textContent = username.slice(0, 2).toUpperCase();
+ 
+const RUNS_KEY = 'km_runs_' + username;
+ 
+function getRuns() {
+  try { return JSON.parse(localStorage.getItem(RUNS_KEY)) || []; }
+  catch { return []; }
+}
+ 
+function saveRuns(runs) {
+  localStorage.setItem(RUNS_KEY, JSON.stringify(runs));
+}
+ 
+function deleteRun(id) {
+  const runs = getRuns().filter(r => r.id !== id);
+  saveRuns(runs);
+  renderAll();
+  showToast('Run deleted.');
+}
+ 
+let activePeriod = 'week';
+ 
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activePeriod = btn.dataset.period;
+    renderAll();
+  });
+});
+ 
+function filterRuns(runs) {
+  if (activePeriod === 'all') return runs;
+  const now = Date.now();
+  const ms = activePeriod === 'week' ? 7 * 86400000 : 30 * 86400000;
+  return runs.filter(r => now - new Date(r.date).getTime() <= ms);
+}
+ 
+function renderStats(runs) {
+  const n     = runs.length;
+  const dist  = runs.reduce((s, r) => s + (+r.distance || 0), 0);
+  const dur   = runs.reduce((s, r) => s + (+r.duration || 0), 0);
+  const cal   = runs.reduce((s, r) => s + (+r.calories || 0), 0);
+  const pace  = dist > 0 ? dur / dist : 0;
+ 
+  $('statDist').innerHTML = `${dist.toFixed(1)}<span class="card-unit">km</span>`;
+  $('statDistSub').textContent = `${n} run${n !== 1 ? 's' : ''} logged`;
+ 
+  $('statDur').innerHTML = `${dur}<span class="card-unit">min</span>`;
+  $('statDurSub').textContent = n ? `avg ${Math.round(dur / n)} min/run` : 'avg per run';
+ 
+  $('statCal').innerHTML = `${cal.toLocaleString()}<span class="card-unit">kcal</span>`;
+  $('statCalSub').textContent = n ? `avg ${Math.round(cal / n)} kcal/run` : 'avg per run';
+ 
+  $('statPace').innerHTML = pace > 0
+    ? `${pace.toFixed(2)}<span class="card-unit">min/km</span>`
+    : `—<span class="card-unit">min/km</span>`;
+  $('statPaceSub').textContent = 'based on logged runs';
+}
+ 
+let distChartInst = null;
+ 
+function renderDistChart(runs) {
+  const canvas = $('distChart');
+  const empty  = $('distEmpty');
+ 
+  if (!runs.length) {
+    canvas.style.display = 'none';
+    empty.style.display  = 'flex';
+    return;
+  }
+  canvas.style.display = 'block';
+  empty.style.display  = 'none';
+ 
+  const sorted = [...runs].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const labels  = sorted.map(r => fmtDate(r.date));
+  const dists   = sorted.map(r => +(+r.distance || 0).toFixed(1));
+  const cals100 = sorted.map(r => +((+r.calories || 0) / 100).toFixed(1));
+ 
+  const ctx = canvas.getContext('2d');
+  canvas.width  = canvas.parentElement.clientWidth - 48;
+  canvas.height = 180;
+  const W = canvas.width, H = canvas.height;
+ 
+  const pad = { top: 16, right: 16, bottom: 36, left: 36 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top  - pad.bottom;
+ 
+  ctx.clearRect(0, 0, W, H);
+ 
+  const allVals = [...dists, ...cals100];
+  const maxV  = Math.max(...allVals, 1);
+  const barW  = Math.max(6, Math.min(28, (cW / labels.length) * 0.4));
+  const step  = labels.length > 1 ? cW / (labels.length - 1) : cW / 2;
+ 
+  const xPos = i => pad.left + (labels.length > 1 ? i * step : cW / 2);
+  const yPos = v => pad.top  + cH - (v / maxV) * cH;
+ 
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth   = 1;
+  for (let j = 0; j <= 4; j++) {
+    const y = pad.top + (cH / 4) * j;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '10px DM Sans, sans-serif';
+    ctx.fillText(((maxV - (maxV / 4) * j)).toFixed(1), 0, y + 4);
+  }
+ 
+  cals100.forEach((v, i) => {
+    const x = xPos(i) - barW / 2;
+    const y = yPos(v);
+    ctx.fillStyle = 'rgba(249,115,22,0.18)';
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, cH - (y - pad.top), [3, 3, 0, 0]);
+    ctx.fill();
+  });
+ 
+  ctx.beginPath();
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth   = 2.5;
+  ctx.lineJoin    = 'round';
+  dists.forEach((v, i) => {
+    i === 0
+      ? ctx.moveTo(xPos(i), yPos(v))
+      : ctx.lineTo(xPos(i), yPos(v));
+  });
+  ctx.stroke();
+ 
+
+  dists.forEach((v, i) => {
+    ctx.beginPath();
+    ctx.arc(xPos(i), yPos(v), 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#2563eb';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+ 
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '10px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  labels.forEach((l, i) => {
+    ctx.fillText(l, xPos(i), H - 8);
+  });
+}
+ 
+function renderIntensityChart(runs) {
+  const canvas = $('intensityChart');
+  const empty  = $('intensityEmpty');
+ 
+  if (!runs.length) {
+    canvas.style.display = 'none';
+    empty.style.display  = 'flex';
+    return;
+  }
+  canvas.style.display = 'block';
+  empty.style.display  = 'none';
+ 
+  const counts = { Easy: 0, Moderate: 0, Hard: 0 };
+  runs.forEach(r => {
+    const k = (r.intensity || 'Moderate').split(' ')[0];
+    if (counts[k] !== undefined) counts[k]++;
+    else counts['Moderate']++;
+  });
+ 
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+  const colors = ['#10b981', '#f97316', '#ef4444'];
+  const total  = values.reduce((a, b) => a + b, 0);
+ 
+  const size = Math.min(canvas.parentElement.clientWidth - 48, 180);
+  canvas.width = canvas.parentElement.clientWidth - 48;
+  canvas.height = 180;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+ 
+  const cx = canvas.width / 2 - 40;
+  const cy = 85;
+  const r  = 60, ri = 36;
+  let angle = -Math.PI / 2;
+ 
+  values.forEach((v, i) => {
+    if (!v) return;
+    const slice = (v / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angle, angle + slice);
+    ctx.closePath();
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+ 
+    ctx.beginPath();
+    ctx.arc(cx, cy, ri, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+ 
+    angle += slice;
+  });
+ 
+
+  ctx.fillStyle = '#0f172a';
+  ctx.font = `700 18px Syne, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(total, cx, cy + 6);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = `11px DM Sans, sans-serif`;
+  ctx.fillText('runs', cx, cy + 20);
+ 
+  const lx = canvas.width - 130;
+  labels.forEach((l, i) => {
+    const ly = 50 + i * 32;
+    ctx.fillStyle = colors[i];
+    ctx.beginPath();
+    ctx.roundRect(lx, ly - 8, 10, 10, 3);
+    ctx.fill();
+    ctx.fillStyle = '#334155';
+    ctx.font = `13px DM Sans, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(`${l}  (${values[i]})`, lx + 16, ly + 2);
+  });
+}
+ 
+function renderTable(runs) {
+  const tbody = $('runsTbody');
+  const empty = $('emptyState');
+  const tableWrap = $('tableWrap');
+ 
+  $('runCount').textContent = `${runs.length} run${runs.length !== 1 ? 's' : ''}`;
+ 
+  if (!runs.length) {
+    tableWrap.style.display = 'none';
+    empty.style.display     = 'block';
+    return;
+  }
+  tableWrap.style.display = 'block';
+  empty.style.display     = 'none';
+ 
+  const sorted = [...runs].sort((a, b) => new Date(b.date) - new Date(a.date));
+ 
+  tbody.innerHTML = sorted.map(r => {
+    const intensity = r.intensity || 'Moderate (6–9 km/h)';
+    const cls = intensity.toLowerCase().startsWith('easy')
+      ? 'intensity-easy'
+      : intensity.toLowerCase().startsWith('hard')
+        ? 'intensity-hard'
+        : 'intensity-moderate';
+    return `
+      <tr>
+        <td>${fmtDate(r.date)}</td>
+        <td><strong>${(+r.distance || 0).toFixed(1)}</strong> km</td>
+        <td>${r.duration || '—'} min</td>
+        <td><span class="cal-pill">${(+r.calories || 0).toLocaleString()}</span> kcal</td>
+        <td><span class="intensity-badge ${cls}">${intensity.split(' ')[0]}</span></td>
+        <td style="color:#94a3b8; font-size:12px; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.notes || '—'}</td>
+        <td><button class="del-btn" onclick="deleteRun('${r.id}')" title="Delete run">🗑</button></td>
+      </tr>`;
+  }).join('');
+}
+ 
+function renderAll() {
+  const allRuns = getRuns();
+  const runs    = filterRuns(allRuns);
+ 
+  renderStats(runs);
+  renderDistChart(runs);
+  renderIntensityChart(runs);
+  renderTable(allRuns); 
+}
+ 
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
+}
+ 
+function seedIfEmpty() {
+  if (getRuns().length) return;
+  const base = Date.now();
+  const day  = 86400000;
+  const seed = [
+    { id: 's1', date: new Date(base - 6 * day).toISOString(), distance: '5.2', duration: '32', calories: '420', intensity: 'Moderate (6–9 km/h)', notes: 'Morning jog' },
+    { id: 's2', date: new Date(base - 4 * day).toISOString(), distance: '3.8', duration: '24', calories: '300', intensity: 'Easy (< 6 km/h)',       notes: 'Recovery run' },
+    { id: 's3', date: new Date(base - 2 * day).toISOString(), distance: '8.0', duration: '44', calories: '680', intensity: 'Hard (> 9 km/h)',        notes: 'Tempo run'    },
+    { id: 's4', date: new Date(base - 1 * day).toISOString(), distance: '5.0', duration: '30', calories: '400', intensity: 'Moderate (6–9 km/h)',    notes: 'Park run'     },
+  ];
+  saveRuns(seed);
+}
+ 
+seedIfEmpty();
+renderAll();
+window.addEventListener('resize', renderAll);
+</script>
+</body>
+</html>
+ 
