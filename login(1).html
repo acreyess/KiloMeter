@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In — KiloMeter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --slate: #0f172a;
+            --slate-mid: #334155;
+            --slate-light: #94a3b8;
+            --bg: #f1f5f9;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #16a34a;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .left-panel {
+            width: 45%;
+            background: var(--slate);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -120px; left: -120px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(37,99,235,0.35) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: -80px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .panel-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-dot {
+            width: 8px; height: 8px;
+            background: var(--blue);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .panel-content { position: relative; z-index: 1; }
+
+        .panel-content h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 18px;
+            letter-spacing: -1px;
+        }
+
+        .panel-content h2 span { color: var(--blue); }
+
+        .panel-content p {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.7;
+            max-width: 300px;
+            margin-bottom: 28px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-item { display: flex; align-items: center; gap: 12px; }
+
+        .feature-icon {
+            width: 34px; height: 34px;
+            background: rgba(37,99,235,0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .feature-text { font-size: 13px; color: #cbd5e1; }
+
+        .feature-text strong {
+            display: block;
+            color: #fff;
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 1px;
+        }
+
+        .panel-bottom { position: relative; z-index: 1; }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 60px;
+            background: var(--bg);
+            overflow-y: auto;
+        }
+
+        .form-box { width: 100%; max-width: 420px; }
+
+        .form-box h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--slate);
+            letter-spacing: -0.8px;
+            margin-bottom: 6px;
+        }
+
+        .form-box .subtitle {
+            font-size: 14px;
+            color: var(--slate-light);
+            margin-bottom: 32px;
+        }
+
+        .form-box .subtitle a { color: var(--blue); text-decoration: none; font-weight: 500; }
+
+        .field { margin-bottom: 18px; }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--slate-mid);
+            margin-bottom: 7px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--slate);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+
+        .field input::placeholder { color: #cbd5e1; }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: var(--blue);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-bottom: 16px;
+        }
+
+        .btn-login:hover   { background: var(--blue-dark); }
+        .btn-login:active  { transform: scale(0.99); }
+        .btn-login:disabled { background: #93c5fd; cursor: not-allowed; }
+
+        .error-msg {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--danger);
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .success-msg {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: var(--success);
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { padding: 40px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="left-panel">
+    <div class="panel-logo"><span class="logo-dot"></span> KiloMeter</div>
+    <div class="panel-content">
+        <h2>Welcome<br><span>Back.</span></h2>
+        <p>Your progress is waiting. Pick up right where you left off.</p>
+    </div>
+    <div class="feature-list">
+        <div class="feature-item">
+            <div class="feature-icon">⚖</div>
+            <div class="feature-text">
+                <strong>BMI &amp; Calorie Calculator</strong>
+                Get personalized health metrics instantly
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">📈</div>
+            <div class="feature-text">
+                <strong>Running Tracker</strong>
+                Log runs and see your progress over time
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text">
+                <strong>Goal Setting</strong>
+                Set targets and celebrate achievements
+            </div>
+        </div>
+    </div>
+    <div class="panel-bottom"></div>
+</div>
+
+<div class="right-panel">
+    <div class="form-box">
+        <h1>Log in</h1>
+        <p class="subtitle">No account? <a href="signup.html">Sign up →</a></p>
+
+        <div class="error-msg"   id="errorMsg"></div>
+        <div class="success-msg" id="successMsg"></div>
+
+        <div class="field">
+            <label for="identifier">Username or email</label>
+            <input type="text" id="identifier" placeholder="johndoe or you@example.com" autocomplete="username">
+        </div>
+
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+        </div>
+
+        <button class="btn-login" id="loginBtn" onclick="login()">Log In</button>
+
+        <p style="text-align:center; font-size:13px; color:#94a3b8;">
+            Don't have an account? <a href="signup.html" style="color:var(--blue);text-decoration:none;font-weight:500;">Sign up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+function login() {
+    const identifier = document.getElementById('identifier').value.trim();
+    const password   = document.getElementById('password').value;
+    const btn        = document.getElementById('loginBtn');
+    const errorMsg   = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+
+    errorMsg.style.display   = 'none';
+    successMsg.style.display = 'none';
+
+    // Basic empty field check
+    if (!identifier || !password) {
+        errorMsg.textContent   = 'Please enter your username/email and password.';
+        errorMsg.style.display = 'block';
+        return;
+    }
+
+    // Load saved users from localStorage
+    const users = JSON.parse(localStorage.getItem('km_users') || '[]');
+
+    // Match by username OR email (case-insensitive), then check password
+    const match = users.find(u =>
+        (u.username.toLowerCase() === identifier.toLowerCase() ||
+         u.email.toLowerCase()    === identifier.toLowerCase()) &&
+         u.password === password
+    );
+
+    if (!match) {
+        errorMsg.textContent   = 'Incorrect username/email or password.';
+        errorMsg.style.display = 'block';
+        return;
+    }
+
+    // Save logged-in user to session
+    sessionStorage.setItem('km_loggedIn', JSON.stringify({ username: match.username, email: match.email }));
+
+    btn.disabled    = true;
+    btn.textContent = 'Logging in…';
+
+    successMsg.textContent   = '✓ Login successful! Redirecting…';
+    successMsg.style.display = 'block';
+
+    setTimeout(() => { window.location.href = 'index(1).html'; }, 1000);
+}
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+</script>
+
+</body>
+</html>
