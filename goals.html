@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goals — KiloMeter</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --b:#2563eb;--bd:#1d4ed8;--s:#0f172a;--sm:#334155;--mu:#94a3b8;
+  --bg:#f0f4fc;--ca:#fff;--br:#e2e8f0;
+  --or:#f97316;--gr:#22c55e;--re:#ef4444;--pu:#8b5cf6;--pi:#ec4899;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--s);min-height:100vh;display:flex}
+
+
+.sb{width:240px;min-height:100vh;background:var(--s);display:flex;flex-direction:column;padding:32px 0;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow:hidden}
+.sb::before{content:'';position:absolute;top:-100px;left:-100px;width:320px;height:320px;background:radial-gradient(circle,rgba(37,99,235,.3),transparent 65%);pointer-events:none}
+.sb-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;padding:0 28px;margin-bottom:40px;position:relative;z-index:1}
+.dot{width:8px;height:8px;background:var(--b);border-radius:50%;box-shadow:0 0 8px var(--b)}
+.sb nav{flex:1;display:flex;flex-direction:column;gap:4px;padding:0 16px;position:relative;z-index:1}
+.sb a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:#64748b;text-decoration:none;transition:all .2s}
+.sb a:hover{background:rgba(255,255,255,.06);color:#cbd5e1}
+.sb a.on{background:var(--b);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.4)}
+.sb-bot{padding:0 16px;position:relative;z-index:1}
+.chip-u{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.av{width:34px;height:34px;background:var(--b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff}
+.un{font-size:13px;font-weight:500;color:#e2e8f0}
+.ur{font-size:11px;color:#475569}
+.lo-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;color:#475569;font-size:13px;cursor:pointer;transition:all .2s;border:none;background:none;width:100%}
+.lo-btn:hover{background:rgba(239,68,68,.1);color:#ef4444}
+
+
+.main{margin-left:240px;flex:1;padding:36px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.topbar h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.7px;margin-bottom:4px}
+.topbar p{font-size:14px;color:var(--mu)}
+.add-btn{display:flex;align-items:center;gap:7px;padding:11px 20px;background:var(--b);color:#fff;border:none;border-radius:11px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(37,99,235,.3)}
+.add-btn:hover{background:var(--bd);transform:translateY(-1px)}
+
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.sum-card{background:var(--ca);border-radius:14px;border:1px solid var(--br);padding:20px 22px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.sum-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07)}
+.sum-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 0 0 60px;opacity:.07}
+.sum-card.blue::after{background:var(--b)}
+.sum-card.green::after{background:var(--gr)}
+.sum-card.orange::after{background:var(--or)}
+.sum-card.purple::after{background:var(--pu)}
+.sum-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--mu);margin-bottom:6px}
+.sum-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:4px}
+.sum-card.blue .sum-val{color:var(--b)}
+.sum-card.green .sum-val{color:var(--gr)}
+.sum-card.orange .sum-val{color:var(--or)}
+.sum-card.purple .sum-val{color:var(--pu)}
+.sum-sub{font-size:12px;color:var(--mu)}
+
+
+.filters{display:flex;align-items:center;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.filter-btn{padding:7px 16px;border-radius:20px;border:1.5px solid var(--br);background:var(--ca);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--sm);cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--b);color:var(--b)}
+.filter-btn.active{background:var(--b);border-color:var(--b);color:#fff}
+
+.goals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+
+.goal-card{background:var(--ca);border-radius:16px;border:1px solid var(--br);overflow:hidden;transition:transform .2s,box-shadow .2s;animation:up .4s ease both}
+.goal-card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.08)}
+.goal-card.completed{opacity:.75}
+
+.gc-top{padding:18px 20px 14px;border-bottom:1px solid var(--br)}
+.gc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.gc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.gc-actions{display:flex;gap:6px}
+.gc-edit,.gc-del{width:28px;height:28px;border-radius:7px;border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.gc-edit{background:#f1f5f9;color:var(--sm)}
+.gc-edit:hover{background:#e2e8f0}
+.gc-del{background:#fef2f2;color:var(--re)}
+.gc-del:hover{background:#fecaca}
+.gc-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--s);letter-spacing:-.3px;margin-bottom:4px}
+.gc-meta{font-size:12px;color:var(--mu);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gc-cat{padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
+
+.gc-body{padding:16px 20px 18px}
+.gc-progress-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.gc-pct{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px}
+.gc-vals{font-size:12px;color:var(--mu)}
+.progress-track{height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;border-radius:4px;transition:width .9s cubic-bezier(.22,.68,0,1.2)}
+
+.gc-update{display:flex;gap:8px;margin-top:4px}
+.gc-input{flex:1;padding:8px 12px;border:1.5px solid var(--br);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--s);outline:none;transition:.2s}
+.gc-input:focus{border-color:var(--b);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.gc-save{padding:8px 14px;background:var(--b);color:#fff;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.gc-save:hover{background:var(--bd)}
+
+.completed-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#dcfce7;color:#16a34a;border-radius:20px;font-size:12px;font-weight:600;margin-top:6px}
+
+
+.empty-state{grid-column:1/-1;padding:60px;text-align:center;color:var(--mu)}
+.empty-state .em-icon{font-size:48px;margin-bottom:16px}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--s);margin-bottom:8px}
+.empty-state p{font-size:14px;line-height:1.6;max-width:300px;margin:0 auto 20px}
+
+
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:20px;width:460px;max-width:95vw;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.18);transform:translateY(20px) scale(.97);transition:transform .3s cubic-bezier(.34,1.4,.64,1);max-height:90vh;overflow-y:auto}
+.overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--s);letter-spacing:-.5px;margin-bottom:22px}
+.mf{margin-bottom:16px}
+.mf label{display:block;font-size:12px;font-weight:500;color:var(--sm);margin-bottom:7px;text-transform:uppercase;letter-spacing:.4px}
+.mf input,.mf select,.mf textarea{width:100%;padding:11px 14px;border:1.5px solid var(--br);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--s);outline:none;transition:.2s;resize:none;background:#fff}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--b);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:10px;margin-top:24px}
+.btn-cancel{flex:1;padding:12px;background:#f1f5f9;color:var(--sm);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:.2s}
+.btn-cancel:hover{background:#e2e8f0}
+.btn-save{flex:1;padding:12px;background:var(--b);color:#fff;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.btn-save:hover{background:var(--bd);transform:translateY(-1px)}
+.btn-save:disabled{background:#93c5fd;cursor:not-allowed;transform:none}
+.modal-err{background:#fef2f2;border:1px solid #fecaca;color:var(--re);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:14px;display:none}
+
+
+.toast{position:fixed;bottom:28px;right:28px;background:var(--s);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:9999;display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateY(0);opacity:1}
+
+.loader{text-align:center;padding:60px;color:var(--mu);font-size:14px}
+
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sb{display:none}.main{margin-left:0;padding:24px 18px}.summary{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sb">
+  <div class="sb-logo"><span class="dot"></span> KiloMeter</div>
+<nav class="nav">
+    <a href="dashboard.html" class="nav-item">
+      <span class="icon">⊞</span> Dashboard
+    </a>
+    <a href="bmi.html" class="nav-item">
+      <span class="icon">⚖️</span> BMI Calculator
+    </a>
+    <a href="tracker.html" class="nav-item">
+      <span class="icon">🏃</span> Run Tracker
+    </a>
+    <a href="progress.html" class="nav-item active">
+      <span class="icon">📊</span> Progress
+    </a>
+    <a href="goals.html" class="nav-item">
+      <span class="icon">🎯</span> Goals
+    </a>
+    <a href="settings.html" class="nav-item">
+      <span class="icon">⚙</span> Settings
+    </a>
+  </nav>
+  <div class="sb-bot">
+    <div class="chip-u">
+      <div class="av" id="av">AT</div>
+      <div><div class="un" id="un">Athlete</div><div class="ur">Runner</div></div>
+    </div>
+    <button class="lo-btn" onclick="logout()">↩ Log out</button>
+  </div>
+</aside>
+
+<main class="main">
+
+  <div class="topbar">
+    <div>
+      <h1>🎯 Goals</h1>
+      <p>Set targets, track progress, and celebrate your wins.</p>
+    </div>
+    <button class="add-btn" onclick="openModal()">+ New Goal</button>
+  </div>
+
+ 
+  <div class="summary">
+    <div class="sum-card blue">
+      <div class="sum-label">Total Goals</div>
+      <div class="sum-val" id="sTotal">0</div>
+      <div class="sum-sub">Created</div>
+    </div>
+    <div class="sum-card green">
+      <div class="sum-label">Completed</div>
+      <div class="sum-val" id="sCompleted">0</div>
+      <div class="sum-sub">Achieved 🎉</div>
+    </div>
+    <div class="sum-card orange">
+      <div class="sum-label">In Progress</div>
+      <div class="sum-val" id="sActive">0</div>
+      <div class="sum-sub">Active goals</div>
+    </div>
+    <div class="sum-card purple">
+      <div class="sum-label">Avg Progress</div>
+      <div class="sum-val" id="sAvg">0%</div>
+      <div class="sum-sub">Across all goals</div>
+    </div>
+  </div>
+
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('active',this)">Active</button>
+    <button class="filter-btn" onclick="setFilter('completed',this)">Completed</button>
+    <button class="filter-btn" onclick="setFilter('distance',this)">📍 Distance</button>
+    <button class="filter-btn" onclick="setFilter('calories',this)">🔥 Calories</button>
+    <button class="filter-btn" onclick="setFilter('sessions',this)">🏃 Sessions</button>
+    <button class="filter-btn" onclick="setFilter('weight',this)">⚖ Weight</button>
+  </div>
+
+  <div class="goals-grid" id="goalsGrid">
+    <div class="loader">Loading your goals…</div>
+  </div>
+
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">🎯 New Goal</div>
+    <div class="modal-err" id="modalErr"></div>
+
+    <input type="hidden" id="editId">
+
+    <div class="mf">
+      <label>Goal Title</label>
+      <input type="text" id="mTitle" placeholder="e.g. Run 100 km this month">
+    </div>
+
+    <div class="mg">
+      <div class="mf">
+        <label>Category</label>
+        <select id="mCat" onchange="syncUnit()">
+          <option value="distance">📍 Distance</option>
+          <option value="calories">🔥 Calories</option>
+          <option value="sessions">🏃 Sessions</option>
+          <option value="weight">⚖ Weight</option>
+          <option value="bmi">💪 BMI</option>
+          <option value="custom">⭐ Custom</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Unit</label>
+        <input type="text" id="mUnit" placeholder="km">
+      </div>
+    </div>
+
+    <div class="mg">
+      <div class="mf">
+        <label>Target Value</label>
+        <input type="number" id="mTarget" placeholder="e.g. 50" min="0" step="any">
+      </div>
+      <div class="mf">
+        <label>Current Value</label>
+        <input type="number" id="mCurrent" placeholder="0" min="0" step="any" value="0">
+      </div>
+    </div>
+
+    <div class="mf">
+      <label>Deadline (optional)</label>
+      <input type="date" id="mDeadline">
+    </div>
+
+    <div class="mf">
+      <label>Notes (optional)</label>
+      <textarea id="mNotes" rows="2" placeholder="Any extra context…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="saveBtnModal" onclick="saveGoal()">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  
+const CAT_CONFIG = {
+  distance: { icon:'📍', color:'#2563eb', bg:'rgba(37,99,235,.1)', unit:'km',   label:'Distance' },
+  calories:  { icon:'🔥', color:'#f97316', bg:'rgba(249,115,22,.1)', unit:'kcal', label:'Calories' },
+  sessions:  { icon:'🏃', color:'#22c55e', bg:'rgba(34,197,94,.1)',  unit:'runs', label:'Sessions' },
+  weight:    { icon:'⚖',  color:'#8b5cf6', bg:'rgba(139,92,246,.1)', unit:'kg',   label:'Weight'   },
+  bmi:       { icon:'💪', color:'#ec4899', bg:'rgba(236,72,153,.1)', unit:'BMI',  label:'BMI'      },
+  custom:    { icon:'⭐', color:'#f59e0b', bg:'rgba(245,158,11,.1)', unit:'',     label:'Custom'   },
+};
+
+let allGoals = [];
+let activeFilter = 'all';
+
+
+function init() {
+  const u = localStorage.getItem('km_username') || 'Athlete';
+  const d = u.charAt(0).toUpperCase() + u.slice(1);
+  document.getElementById('un').textContent = d;
+  document.getElementById('av').textContent = d.slice(0,2).toUpperCase();
+  fetchGoals();
+}
+
+function fetchGoals() {
+  fetch('goals.php')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        allGoals = data.goals;
+        renderAll();
+      } else {
+        showFallback('Could not load goals: ' + data.message);
+      }
+    })
+    .catch(() => {
+  
+      allGoals = JSON.parse(localStorage.getItem('km_goals') || '[]');
+      renderAll();
+    });
+}
+
+function renderAll() {
+  updateSummary();
+  renderGrid();
+}
+
+function updateSummary() {
+  const total     = allGoals.length;
+  const completed = allGoals.filter(g => g.status === 'completed').length;
+  const active    = allGoals.filter(g => g.status === 'active').length;
+  const avgPct    = total ? Math.round(allGoals.reduce((s,g) => s + (g.progress||calcPct(g)), 0) / total) : 0;
+
+  document.getElementById('sTotal').textContent     = total;
+  document.getElementById('sCompleted').textContent = completed;
+  document.getElementById('sActive').textContent    = active;
+  document.getElementById('sAvg').textContent       = avgPct + '%';
+}
+
+function calcPct(g) {
+  return g.target_value > 0 ? Math.min(100, Math.round((g.current_value / g.target_value) * 100)) : 0;
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('goalsGrid');
+
+  let filtered = [...allGoals];
+  if (activeFilter === 'active')    filtered = filtered.filter(g => g.status === 'active');
+  else if (activeFilter === 'completed') filtered = filtered.filter(g => g.status === 'completed');
+  else if (['distance','calories','sessions','weight','bmi','custom'].includes(activeFilter))
+    filtered = filtered.filter(g => g.category === activeFilter);
+
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="em-icon">🎯</div>
+        <h3>No goals here yet</h3>
+        <p>Hit <strong>+ New Goal</strong> to set your first target and start tracking progress.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((g,i) => buildCard(g, i)).join('');
+
+  setTimeout(() => {
+    filtered.forEach(g => {
+      const bar = document.getElementById('bar-' + g.id);
+      const pct = calcPct(g);
+      if (bar) bar.style.width = pct + '%';
+    });
+  }, 80);
+}
+
+function buildCard(g, i) {
+  const cfg = CAT_CONFIG[g.category] || CAT_CONFIG.custom;
+  const pct = calcPct(g);
+  const delay = i * 0.06;
+
+  const deadline = g.deadline
+    ? `· Due ${new Date(g.deadline).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`
+    : '';
+
+  const daysLeft = g.deadline ? Math.ceil((new Date(g.deadline) - new Date()) / 86400000) : null;
+  const urgency = daysLeft !== null && daysLeft <= 7 && daysLeft >= 0
+    ? `<span style="color:var(--re);font-weight:600">${daysLeft}d left ⚠</span>`
+    : daysLeft !== null && daysLeft < 0
+      ? `<span style="color:var(--mu)">Expired</span>`
+      : '';
+
+  const progressColor = pct >= 100 ? '#22c55e' : pct >= 60 ? cfg.color : pct >= 30 ? '#f97316' : '#ef4444';
+
+  const completedBadge = g.status === 'completed'
+    ? `<div class="completed-badge">✓ Goal Achieved!</div>`
+    : `<div class="gc-update">
+        <input class="gc-input" type="number" id="upd-${g.id}" placeholder="Update progress (${cfg.unit || g.unit})" step="any" min="0">
+        <button class="gc-save" onclick="updateProgress(${g.id})">Update</button>
+       </div>`;
+
+  return `
+  <div class="goal-card ${g.status === 'completed' ? 'completed' : ''}" style="animation-delay:${delay}s">
+    <div class="gc-top">
+      <div class="gc-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="gc-icon" style="background:${cfg.bg}">${cfg.icon}</div>
+          <div>
+            <div class="gc-title">${escHtml(g.title)}</div>
+            <div class="gc-meta">
+              <span class="gc-cat" style="background:${cfg.bg};color:${cfg.color}">${cfg.label}</span>
+              ${urgency}
+            </div>
+          </div>
+        </div>
+        <div class="gc-actions">
+          <button class="gc-edit" onclick="openEdit(${g.id})" title="Edit">✏</button>
+          <button class="gc-del"  onclick="deleteGoal(${g.id})" title="Delete">✕</button>
+        </div>
+      </div>
+      ${deadline ? `<div style="font-size:11px;color:var(--mu);margin-top:4px">${deadline}</div>` : ''}
+      ${g.notes ? `<div style="font-size:12px;color:var(--mu);margin-top:6px;font-style:italic">"${escHtml(g.notes)}"</div>` : ''}
+    </div>
+    <div class="gc-body">
+      <div class="gc-progress-row">
+        <div class="gc-pct" style="color:${progressColor}">${pct}%</div>
+        <div class="gc-vals">${g.current_value} / ${g.target_value} ${g.unit || cfg.unit}</div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="bar-${g.id}" style="width:0%;background:${progressColor}"></div>
+      </div>
+      ${completedBadge}
+    </div>
+  </div>`;
+}
+
+
+function syncUnit() {
+  const cat = document.getElementById('mCat').value;
+  const cfg = CAT_CONFIG[cat];
+  document.getElementById('mUnit').value = cfg ? cfg.unit : '';
+}
+
+function openModal(prefill = null) {
+  document.getElementById('modalTitle').textContent = '🎯 New Goal';
+  document.getElementById('editId').value = '';
+  document.getElementById('mTitle').value = '';
+  document.getElementById('mCat').value = 'distance';
+  document.getElementById('mTarget').value = '';
+  document.getElementById('mCurrent').value = '0';
+  document.getElementById('mDeadline').value = '';
+  document.getElementById('mNotes').value = '';
+  document.getElementById('modalErr').style.display = 'none';
+  document.getElementById('saveBtnModal').textContent = 'Save Goal';
+  syncUnit();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function openEdit(id) {
+  const g = allGoals.find(x => x.id == id);
+  if (!g) return;
+  document.getElementById('modalTitle').textContent = '✏ Edit Goal';
+  document.getElementById('editId').value = g.id;
+  document.getElementById('mTitle').value = g.title;
+  document.getElementById('mCat').value = g.category;
+  document.getElementById('mUnit').value = g.unit;
+  document.getElementById('mTarget').value = g.target_value;
+  document.getElementById('mCurrent').value = g.current_value;
+  document.getElementById('mDeadline').value = g.deadline ? g.deadline.split('T')[0] : '';
+  document.getElementById('mNotes').value = g.notes || '';
+  document.getElementById('modalErr').style.display = 'none';
+  document.getElementById('saveBtnModal').textContent = 'Save Changes';
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function saveGoal() {
+  const title   = document.getElementById('mTitle').value.trim();
+  const cat     = document.getElementById('mCat').value;
+  const unit    = document.getElementById('mUnit').value.trim();
+  const target  = parseFloat(document.getElementById('mTarget').value);
+  const current = parseFloat(document.getElementById('mCurrent').value) || 0;
+  const deadline = document.getElementById('mDeadline').value;
+  const notes   = document.getElementById('mNotes').value.trim();
+  const editId  = document.getElementById('editId').value;
+  const errEl   = document.getElementById('modalErr');
+  const btn     = document.getElementById('saveBtnModal');
+
+  errEl.style.display = 'none';
+  if (!title) { errEl.textContent = 'Please enter a title.'; errEl.style.display = 'block'; return; }
+  if (!target || target <= 0) { errEl.textContent = 'Target value must be greater than 0.'; errEl.style.display = 'block'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const payload = { title, category: cat, unit, target_value: target, current_value: current, deadline, notes };
+
+  
+  if (editId) {
+    
+    apiCall({ action: 'delete', id: parseInt(editId) })
+      .then(() => apiCall(payload))
+      .then(handleSaved)
+      .catch(handleErr);
+  } else {
+    apiCall(payload).then(handleSaved).catch(handleErr);
+  }
+
+  function handleSaved(data) {
+    if (data.success) {
+      closeModal();
+      fetchGoals();
+      showToast(editId ? '✓ Goal updated!' : '✓ Goal created!');
+    } else {
+      errEl.textContent = data.message || 'Failed to save goal.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = editId ? 'Save Changes' : 'Save Goal';
+    }
+  }
+
+  function handleErr() {
+    
+    const goals = JSON.parse(localStorage.getItem('km_goals') || '[]');
+    if (editId) { const idx = goals.findIndex(g => g.id == editId); if (idx > -1) goals.splice(idx, 1); }
+    const pct  = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
+    goals.unshift({ id: Date.now(), title, category: cat, unit, target_value: target, current_value: current,
+                    deadline: deadline || null, notes, status: current >= target ? 'completed' : 'active', progress: pct, created_at: new Date().toISOString() });
+    localStorage.setItem('km_goals', JSON.stringify(goals));
+    allGoals = goals;
+    closeModal();
+    renderAll();
+    showToast('✓ Saved locally (offline mode)');
+    btn.disabled = false;
+  }
+}
+
+function updateProgress(id) {
+  const inp = document.getElementById('upd-' + id);
+  const val = parseFloat(inp.value);
+  if (isNaN(val) || val < 0) { showToast('⚠ Enter a valid value'); return; }
+
+  apiCall({ action: 'update_progress', id, current_value: val })
+    .then(data => {
+      if (data.success) {
+        fetchGoals();
+        showToast('✓ Progress updated!');
+      }
+    })
+    .catch(() => {
+    
+      const goals = JSON.parse(localStorage.getItem('km_goals') || '[]');
+      const g = goals.find(x => x.id == id);
+      if (g) {
+        g.current_value = val;
+        g.status = val >= g.target_value ? 'completed' : 'active';
+        g.progress = calcPct(g);
+        localStorage.setItem('km_goals', JSON.stringify(goals));
+        allGoals = goals;
+        renderAll();
+        showToast('✓ Updated locally');
+      }
+    });
+}
+
+
+function deleteGoal(id) {
+  if (!confirm('Delete this goal? This cannot be undone.')) return;
+  apiCall({ action: 'delete', id })
+    .then(data => {
+      if (data.success) { fetchGoals(); showToast('Goal deleted.'); }
+    })
+    .catch(() => {
+      const goals = JSON.parse(localStorage.getItem('km_goals') || '[]')
+                      .filter(g => g.id != id);
+      localStorage.setItem('km_goals', JSON.stringify(goals));
+      allGoals = goals;
+      renderAll();
+      showToast('Deleted locally.');
+    });
+}
+
+
+function apiCall(payload) {
+  return fetch('goals.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(r => r.json());
+}
+
+function showFallback(msg) {
+  document.getElementById('goalsGrid').innerHTML =
+    `<div class="loader">${msg}</div>`;
+}
+
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function logout() {
+  fetch('logout.php', { method: 'POST' }).catch(() => {});
+  localStorage.removeItem('km_username');
+  window.location.href = 'login.html';
+}
+
+
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeModal();
+});
+
+init();
+</script>
+</body>
+</html>
