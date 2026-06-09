@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — KiloMeter</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  :root {
+    --blue: #2563eb;
+    --blue-dark: #1d4ed8;
+    --blue-glow: rgba(37,99,235,0.18);
+    --slate: #0f172a;
+    --slate-mid: #334155;
+    --slate-light: #64748b;
+    --muted: #94a3b8;
+    --bg: #f0f4fc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+  }
+ 
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--slate); min-height: 100vh; display: flex; }
+ 
+  .sidebar { width: 240px; min-height: 100vh; background: var(--slate); display: flex; flex-direction: column; padding: 32px 0; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; overflow: hidden; }
+  .sidebar::before { content: ''; position: absolute; top: -100px; left: -100px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(37,99,235,0.3) 0%, transparent 65%); pointer-events: none; }
+  .sidebar::after { content: ''; position: absolute; bottom: -60px; right: -60px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%); pointer-events: none; }
+ 
+  .sidebar-logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; padding: 0 28px; margin-bottom: 40px; position: relative; z-index: 1; letter-spacing: -0.5px; }
+  .logo-dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; box-shadow: 0 0 8px var(--blue); }
+ 
+  .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 16px; position: relative; z-index: 1; }
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 500; color: #64748b; text-decoration: none; cursor: pointer; transition: all 0.2s; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #cbd5e1; }
+  .nav-item.active { background: var(--blue); color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
+  .nav-icon { font-size: 17px; width: 20px; text-align: center; }
+ 
+  .sidebar-bottom { padding: 0 16px; position: relative; z-index: 1; }
+  .user-chip { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px; }
+  .avatar { width: 34px; height: 34px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .user-info .name { font-size: 13px; font-weight: 500; color: #e2e8f0; line-height: 1; margin-bottom: 3px; }
+  .user-info .role { font-size: 11px; color: #475569; }
+  .logout-btn { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; color: #475569; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; border: none; background: none; width: 100%; }
+  .logout-btn:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+ 
+  .main { margin-left: 240px; flex: 1; padding: 36px 40px; min-height: 100vh; }
+  .page-header { margin-bottom: 32px; }
+  .page-header h1 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--slate); letter-spacing: -0.7px; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: var(--muted); }
+ 
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+ 
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--slate); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .card-title-icon { width: 28px; height: 28px; background: var(--blue-glow); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+ 
+  /* Read-only personal info */
+  .field-group { display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--slate-light); text-transform: uppercase; letter-spacing: 0.05em; }
+  .field .readonly-val { padding: 10px 14px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; color: #94a3b8; }
+  .readonly-note { font-size: 12px; color: var(--muted); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+ 
+  /* Editable body metrics */
+  .metric-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .metric-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .metric-label { font-size: 14px; color: var(--slate); font-weight: 500; }
+  .metric-hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .metric-input-wrap { display: flex; align-items: center; gap: 6px; }
+  .metric-input-wrap input { width: 72px; padding: 8px 10px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--slate); outline: none; text-align: right; transition: border-color 0.2s, box-shadow 0.2s; }
+  .metric-input-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+  .metric-input-wrap select { padding: 8px 10px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--slate); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .metric-input-wrap select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); background: #fff; }
+  .unit-label { font-size: 13px; color: var(--muted); }
+ 
+  .btn-row { display: flex; justify-content: flex-end; gap: 10px; }
+  .btn { padding: 11px 22px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--slate-mid); transition: all 0.2s; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--blue); border-color: var(--blue); color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+ 
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--slate); color: #fff; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; opacity: 0; transform: translateY(12px); transition: all 0.3s; pointer-events: none; z-index: 999; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+ 
+<div class="sidebar">
+  <div class="sidebar-logo"><div class="logo-dot"></div> KiloMeter</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">⊞</span> Dashboard</a>
+    <a class="nav-item" href="bmi.html"><span class="nav-icon">⚖</span> BMI Calculator</a>
+    <a class="nav-item" href="tracker.html"><span class="nav-icon">🏃</span> Run Tracker</a>
+    <a class="nav-item" href="progress.html"><span class="nav-icon">📈</span> Progress</a>
+    <a class="nav-item" href="goals.html"><span class="nav-icon">🎯</span> Goals</a>
+    <a class="nav-item active" href="settings.html"><span class="nav-icon">⚙</span> Settings</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-chip">
+      <div class="avatar" id="sidebarAvatar">AT</div>
+      <div class="user-info">
+        <div class="name" id="sidebarName">Athlete</div>
+        <div class="role">Runner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">← Log out</button>
+  </div>
+</div>
+ 
+<div class="main">
+  <div class="page-header">
+    <h1>Settings</h1>
+    <p>View your profile and update your body metrics</p>
+  </div>
+ 
+  <div class="cards-grid">
+    <!-- Personal Info — READ ONLY -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">👤</div>
+        Personal info
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <label>Username</label>
+          <div class="readonly-val" id="displayName">—</div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <div class="readonly-val" id="email">—</div>
+        </div>
+      </div>
+      <p class="readonly-note">🔒 Personal info is set at signup and cannot be changed here.</p>
+    </div>
+ 
+    <!-- Body Metrics — EDITABLE -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-title-icon">📏</div>
+        Body metrics
+      </div>
+ 
+      <div class="metric-row">
+        <div><div class="metric-label">Height</div><div class="metric-hint">Used for BMI</div></div>
+        <div class="metric-input-wrap">
+          <input type="number" id="height" value="170" min="100" max="250" />
+          <span class="unit-label">cm</span>
+        </div>
+      </div>
+ 
+      <div class="metric-row">
+        <div><div class="metric-label">Weight</div><div class="metric-hint">Current body weight</div></div>
+        <div class="metric-input-wrap">
+          <input type="number" id="weight" value="70" min="30" max="300" />
+          <span class="unit-label">kg</span>
+        </div>
+      </div>
+ 
+      <div class="metric-row">
+        <div class="metric-label">Gender</div>
+        <div class="metric-input-wrap">
+          <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Prefer not to say</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="metric-row">
+        <div class="metric-label">Activity level</div>
+        <div class="metric-input-wrap">
+          <select id="activity">
+            <option value="sedentary">Sedentary</option>
+            <option value="light">Lightly active</option>
+            <option value="moderate">Moderately active</option>
+            <option value="active">Very active</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="btn-row">
+    <button class="btn" onclick="cancelChanges()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveChanges()">Save changes</button>
+  </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+  function init() {
+    const user     = JSON.parse(localStorage.getItem('km_user') || '{}');
+    const settings = JSON.parse(localStorage.getItem('km_settings') || '{}');
+    const username = localStorage.getItem('km_username') || 'Athlete';
+    const name     = typeof username === 'object' ? username.username : username;
+    const display  = name.charAt(0).toUpperCase() + name.slice(1);
+ 
+    // Sidebar
+    document.getElementById('sidebarName').textContent   = display;
+    document.getElementById('sidebarAvatar').textContent = display.slice(0,2).toUpperCase();
+ 
+    // Personal info — read only, just display
+    document.getElementById('displayName').textContent = display;
+    document.getElementById('email').textContent       = user.email || settings.email || '—';
+ 
+    // Body metrics — editable
+    document.getElementById('height').value   = settings.height   || 170;
+    document.getElementById('weight').value   = settings.weight   || 70;
+    document.getElementById('gender').value   = settings.gender   || 'male';
+    document.getElementById('activity').value = settings.activity || 'light';
+  }
+ 
+  async function saveChanges() {
+    const settings = JSON.parse(localStorage.getItem('km_settings') || '{}');
+ 
+    settings.height   = parseFloat(document.getElementById('height').value);
+    settings.weight   = parseFloat(document.getElementById('weight').value);
+    settings.gender   = document.getElementById('gender').value;
+    settings.activity = document.getElementById('activity').value;
+ 
+    localStorage.setItem('km_settings', JSON.stringify(settings));
+ 
+    // Also update km_bmi weight so tracker uses the new weight
+    const bmi = JSON.parse(localStorage.getItem('km_bmi') || '{}');
+    if (bmi && settings.weight) {
+      bmi.weight = settings.weight;
+      localStorage.setItem('km_bmi', JSON.stringify(bmi));
+    }
+ 
+    showToast('✓ Body metrics saved!');
+  }
+ 
+  function cancelChanges() { init(); showToast('Changes discarded.'); }
+ 
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+ 
+  function logout() {
+    fetch('logout.php', { method: 'POST' }).catch(() => {});
+    localStorage.removeItem('km_username');
+    localStorage.removeItem('km_user');
+    localStorage.removeItem('user');
+    window.location.href = 'login (1).html';
+  }
+ 
+  init();
+</script>
+</body>
+</html>
