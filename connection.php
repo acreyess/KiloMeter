@@ -1,6 +1,6 @@
 <?php
 
-$con = mysqli_connect("localhost", "root", "", "kilometer1");
+$con = mysqli_connect("localhost", "root", "", "kilometer_db");
 
 if (!$con) {
     die("Connection failed");
