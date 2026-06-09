@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — KiloMeter</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  :root {
+    --blue: #2563eb;
+    --blue-dark: #1d4ed8;
+    --blue-glow: rgba(37,99,235,0.18);
+    --blue-faint: rgba(37,99,235,0.07);
+    --slate: #0f172a;
+    --slate-mid: #334155;
+    --slate-light: #64748b;
+    --muted: #94a3b8;
+    --bg: #f0f4fc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --orange: #f97316;
+    --green: #22c55e;
+    --green-light: #dcfce7;
+    --red: #ef4444;
+  }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--slate);
+    min-height: 100vh;
+    display: flex;
+  }
+ 
+
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: var(--slate);
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    overflow: hidden;
+  }
+ 
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: -100px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(37,99,235,0.3) 0%, transparent 65%);
+    pointer-events: none;
+  }
+ 
+  .sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+ 
+  .sidebar-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 28px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.5px;
+  }
+ 
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--blue);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--blue);
+  }
+ 
+  .sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748b;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+ 
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #cbd5e1; }
+ 
+  .nav-item.active {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.4);
+  }
+ 
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+ 
+  .sidebar-bottom {
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 8px;
+  }
+ 
+  .avatar {
+    width: 34px; height: 34px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+ 
+  .user-info .name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #e2e8f0;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+ 
+  .user-info .role {
+    font-size: 11px;
+    color: #475569;
+  }
+ 
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+  }
+ 
+  .logout-btn:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+ 
+  
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 36px 40px;
+    min-height: 100vh;
+  }
+ 
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 36px;
+  }
+ 
+  .topbar-left h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--slate);
+    letter-spacing: -0.7px;
+    margin-bottom: 4px;
+  }
+ 
+  .topbar-left p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+ 
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+ 
+  .date-badge {
+    padding: 8px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--slate-light);
+  }
+ 
+  .log-btn {
+    padding: 10px 18px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+  }
+ 
+  .log-btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+ 
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+ 
+  .stat-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 22px 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+ 
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.07); }
+ 
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 0 0 0 80px;
+    opacity: 0.08;
+  }
+ 
+  .stat-card.blue::before  { background: var(--blue); }
+  .stat-card.orange::before { background: var(--orange); }
+  .stat-card.green::before  { background: var(--green); }
+  .stat-card.red::before    { background: var(--red); }
+ 
+  .stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+ 
+  .stat-card.blue .stat-icon  { background: rgba(37,99,235,0.1); }
+  .stat-card.orange .stat-icon { background: rgba(249,115,22,0.1); }
+  .stat-card.green .stat-icon  { background: rgba(34,197,94,0.1); }
+  .stat-card.red .stat-icon    { background: rgba(239,68,68,0.1); }
+ 
+  .stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+ 
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--slate);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+ 
+  .stat-card.blue .stat-value  { color: var(--blue); }
+  .stat-card.orange .stat-value { color: var(--orange); }
+  .stat-card.green .stat-value  { color: var(--green); }
+ 
+  .stat-sub {
+    font-size: 12px;
+    color: var(--muted);
+  }
+ 
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-left: 6px;
+  }
+ 
+  .stat-badge.up   { background: #dcfce7; color: #16a34a; }
+  .stat-badge.down { background: #fef2f2; color: #dc2626; }
+ 
+
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+ 
+  .panel {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+ 
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+ 
+  .panel-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--slate);
+    letter-spacing: -0.3px;
+  }
+ 
+  .panel-action {
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+  }
+ 
+  
+  .chart-wrap {
+    padding: 20px 24px;
+  }
+ 
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 140px;
+  }
+ 
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+ 
+  .bar {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.4s cubic-bezier(.22,.68,0,1.2);
+    cursor: pointer;
+    position: relative;
+  }
+ 
+  .bar.active { background: var(--blue) !important; box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+ 
+  .bar:hover::after {
+    content: attr(data-val);
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--slate);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+  }
+ 
+  .bar-label { font-size: 11px; color: var(--muted); }
+ 
+
+  .run-list { padding: 8px 0; }
+ 
+  .run-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 24px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+ 
+  .run-item:hover { background: #f8fafc; }
+ 
+  .run-icon {
+    width: 38px; height: 38px;
+    background: var(--blue-faint);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+ 
+  .run-info { flex: 1; }
+ 
+  .run-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--slate);
+    margin-bottom: 2px;
+  }
+ 
+  .run-meta { font-size: 12px; color: var(--muted); }
+ 
+  .run-dist {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--slate);
+  }
+ 
+  .run-cal {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 2px;
+  }
+ 
+ 
+  .bmi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+ 
+  .bmi-visual {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+ 
+  .bmi-number-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+ 
+  .bmi-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+ 
+  .bmi-unit {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+ 
+  .bmi-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--green-light);
+    color: #16a34a;
+    width: fit-content;
+  }
+ 
+  .bmi-scale {
+    position: relative;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #60a5fa, #22c55e, #f97316, #ef4444);
+    margin-top: 8px;
+  }
+ 
+  .bmi-pointer {
+    position: absolute;
+    top: -5px;
+    width: 18px; height: 18px;
+    background: #fff;
+    border: 3px solid var(--blue);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: left 0.6s cubic-bezier(.34,1.56,.64,1);
+  }
+ 
+  .bmi-scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+ 
+  .bmi-scale-labels span { font-size: 10px; color: var(--muted); }
+ 
+  .bmi-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+ 
+  .bmi-stat {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+ 
+  .bmi-stat .bs-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .bmi-stat .bs-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--slate);
+    letter-spacing: -0.5px;
+  }
+ 
+ 
+  .goals-panel .panel-body { padding: 16px 24px; }
+ 
+  .goal-item {
+    margin-bottom: 18px;
+  }
+ 
+  .goal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+ 
+  .goal-name { font-size: 13px; font-weight: 500; color: var(--slate); }
+ 
+  .goal-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+ 
+  .progress-track {
+    height: 7px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+ 
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(.22,.68,0,1.2);
+  }
+ 
+  
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.55);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+ 
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+ 
+  .modal {
+    background: #fff;
+    border-radius: 20px;
+    width: 420px;
+    padding: 32px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.3s cubic-bezier(.34,1.4,.64,1);
+  }
+ 
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+ 
+  .modal h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--slate);
+    letter-spacing: -0.5px;
+    margin-bottom: 22px;
+  }
+ 
+  .modal-field { margin-bottom: 16px; }
+ 
+  .modal-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--slate-mid);
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+ 
+  .modal-field input, .modal-field textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--slate);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none;
+  }
+ 
+  .modal-field input:focus, .modal-field textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+ 
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+ 
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+  }
+ 
+  .btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: #f1f5f9;
+    color: var(--slate-mid);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+ 
+  .btn-cancel:hover { background: #e2e8f0; }
+ 
+  .btn-save {
+    flex: 1;
+    padding: 12px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+  }
+ 
+  .btn-save:hover { background: var(--blue-dark); transform: translateY(-1px); }
+ 
+
+  .toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--slate);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+ 
+  .toast.show { transform: translateY(0); opacity: 1; }
+ 
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+ 
+  .stat-card { animation: fadeUp 0.5s ease both; }
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.10s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.20s; }
+ 
+  .panel { animation: fadeUp 0.5s ease both; animation-delay: 0.25s; }
+ 
+  @media (max-width: 1100px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .bmi-row    { grid-template-columns: 1fr; }
+  }
+ 
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main    { margin-left: 0; padding: 24px 18px; }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+ 
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><span class="logo-dot"></span> KiloMeter</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="#">
+      <span class="nav-icon">⊞</span> Dashboard
+    </a>
+    <a class="nav-item" href="bmi (1).html">
+      <span class="nav-icon">⚖</span> BMI Calculator
+    </a>
+    <a class="nav-item" href="tracker.html">
+      <span class="nav-icon">🏃</span> Run Tracker
+    </a>
+    <a class="nav-item" href="progress (1).html">
+      <span class="nav-icon">📊</span> Progress
+    </a>
+    <a class="nav-item" href="goals.html">
+      <span class="nav-icon">🎯</span> Goals
+    </a>
+    <a class="nav-item" href="settings.html">
+      <span class="nav-icon">⚙</span> Settings
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-chip">
+      <div class="avatar" id="sidebarAvatar">JD</div>
+      <div class="user-info">
+        <div class="name" id="sidebarName">John Doe</div>
+        <div class="role">Runner</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      <span>↩</span> Log out
+    </button>
+  </div>
+</aside>
+ 
+
+<main class="main">
+ 
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="greeting">Good morning, John 👋</h1>
+      <p>Here's your fitness overview for today.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="date-badge" id="dateDisplay">Mon, May 4</div>
+      <button class="log-btn" onclick="openModal()">+ Log a Run</button>
+    </div>
+  </div>
+ 
+ 
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-icon">🏃</div>
+      <div class="stat-label">Total Runs</div>
+      <div class="stat-value" id="totalRuns">0</div>
+      <div class="stat-sub">All time sessions</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-label">Calories Burned</div>
+      <div class="stat-value" id="totalCal">0</div>
+      <div class="stat-sub">Total calories</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">📍</div>
+      <div class="stat-label">Total Distance</div>
+      <div class="stat-value" id="totalKm">0<span style="font-size:16px;font-weight:400;color:var(--muted)"> km</span></div>
+      <div class="stat-sub">Kilometers logged</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f1f5f9">📈</div>
+      <div class="stat-label">Avg per Run</div>
+      <div class="stat-value" id="avgKm" style="color:var(--slate)">0<span style="font-size:16px;font-weight:400;color:var(--muted)"> km</span></div>
+      <div class="stat-sub">Distance average</div>
+    </div>
+  </div>
+ 
+  
+  <div class="bmi-row">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">⚖ Your BMI</div>
+        <a class="panel-action" href="bmi (1).html">Recalculate →</a>
+      </div>
+      <div class="bmi-visual">
+        <div>
+          <div class="bmi-number-row">
+            <div class="bmi-number" id="bmiVal">—</div>
+            <div class="bmi-unit">BMI</div>
+          </div>
+          <div class="bmi-status-badge" id="bmiStatus">
+            <span>●</span> <span id="bmiStatusText">No data yet</span>
+          </div>
+        </div>
+        <div>
+          <div class="bmi-scale">
+            <div class="bmi-pointer" id="bmiPointer" style="left:50%"></div>
+          </div>
+          <div class="bmi-scale-labels">
+            <span>Under</span><span>Normal</span><span>Over</span><span>Obese</span>
+          </div>
+        </div>
+        <div class="bmi-stats">
+          <div class="bmi-stat">
+            <div class="bs-label">Daily Calories</div>
+            <div class="bs-val" id="bmiCalories">—</div>
+          </div>
+          <div class="bmi-stat">
+            <div class="bs-label">Last Checked</div>
+            <div class="bs-val" id="bmiDate">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="panel goals-panel">
+      <div class="panel-header">
+        <div class="panel-title">🎯 Weekly Goals</div>
+        <span class="panel-action" style="cursor:default" id="weeklyPct">0% done</span>
+      </div>
+      <div class="panel-body">
+        <div class="goal-item">
+          <div class="goal-row">
+            <span class="goal-name">Distance (km)</span>
+            <span class="goal-pct" id="distGoalPct" style="color:var(--blue)">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="distBar" style="width:0%;background:var(--blue)"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row">
+            <span class="goal-name">Calories Burned</span>
+            <span class="goal-pct" id="calGoalPct" style="color:var(--orange)">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="calBar" style="width:0%;background:var(--orange)"></div></div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-row">
+            <span class="goal-name">Running Sessions</span>
+            <span class="goal-pct" id="sessGoalPct" style="color:var(--green)">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="sessBar" style="width:0%;background:var(--green)"></div></div>
+        </div>
+ 
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.4px;font-weight:500;">Weekly Targets</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+            <div style="text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--slate)">30 km</div>
+              <div style="font-size:11px;color:var(--muted)">Distance</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--slate)">3500</div>
+              <div style="font-size:11px;color:var(--muted)">Calories</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--slate)">5 runs</div>
+              <div style="font-size:11px;color:var(--muted)">Sessions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+
+  <div class="bottom-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">📊 Distance This Week (km)</div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-bars" id="chartBars">
+          <!-- generated by JS -->
+        </div>
+      </div>
+    </div>
+ 
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">🕓 Recent Runs</div>
+        <a class="panel-action" href="tracker.html">View all →</a>
+      </div>
+      <div class="run-list" id="runList">
+        <div style="padding:32px 24px;text-align:center;color:var(--muted);font-size:14px;">
+          No runs logged yet.<br>Hit <strong>+ Log a Run</strong> to get started!
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+</main>
+ 
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>🏃 Log a New Run</h2>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>Distance (km)</label>
+        <input type="number" id="mDist" placeholder="e.g. 5.5" step="0.1" min="0">
+      </div>
+      <div class="modal-field">
+        <label>Duration (min)</label>
+        <input type="number" id="mDur" placeholder="e.g. 45" min="0">
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Calories Burned</label>
+      <input type="number" id="mCal" placeholder="e.g. 400" min="0">
+    </div>
+    <div class="modal-field">
+      <label>Notes (optional)</label>
+      <textarea id="mNotes" rows="2" placeholder="Morning jog around the park…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveRun()">Save Run</button>
+    </div>
+  </div>
+</div>
+ 
+
+<div class="toast" id="toast">✓ Run logged successfully!</div>
+ 
+<script>
+
+const GOALS = { km: 30, cal: 3500, runs: 5 };
+const DAYS  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+ 
+let runs     = JSON.parse(localStorage.getItem('km_runs') || '[]');
+let bmiData  = JSON.parse(localStorage.getItem('km_bmi')  || 'null');
+let username = localStorage.getItem('km_username') || localStorage.getItem('user') || 'Athlete';
+ 
+function init() {
+  setupGreeting();
+  renderStats();
+  renderBMI();
+  renderGoals();
+  renderChart();
+  renderRecentRuns();
+}
+ 
+function setupGreeting() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const name = (typeof username === 'object' ? username.username : username) || 'Athlete';
+  const display = name.charAt(0).toUpperCase() + name.slice(1);
+ 
+  document.getElementById('greeting').textContent = `${greet}, ${display} 👋`;
+  document.getElementById('sidebarName').textContent = display;
+  document.getElementById('sidebarAvatar').textContent = display.slice(0,2).toUpperCase();
+ 
+  const now = new Date();
+  document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+}
+ 
+
+function renderStats() {
+  const totalRuns = runs.length;
+  const totalCal  = runs.reduce((s,r) => s + (r.cal||0), 0);
+  const totalKm   = runs.reduce((s,r) => s + (r.dist||0), 0);
+  const avgKm     = totalRuns ? (totalKm / totalRuns).toFixed(1) : 0;
+ 
+  animCount('totalRuns', totalRuns);
+  animCount('totalCal',  totalCal);
+  document.getElementById('totalKm').innerHTML = `${totalKm.toFixed(1)}<span style="font-size:16px;font-weight:400;color:var(--muted)"> km</span>`;
+  document.getElementById('avgKm').innerHTML   = `${avgKm}<span style="font-size:16px;font-weight:400;color:var(--muted)"> km</span>`;
+}
+ 
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  let start = 0;
+  const step = target / 40;
+  const t = setInterval(() => {
+    start = Math.min(start + step, target);
+    el.textContent = Math.round(start).toLocaleString();
+    if (start >= target) clearInterval(t);
+  }, 18);
+}
+ 
+
+function renderBMI() {
+  if (!bmiData) return;
+  const bmi = parseFloat(bmiData.bmi);
+  document.getElementById('bmiVal').textContent = bmi.toFixed(1);
+ 
+  let status = 'Normal', color = 'var(--green)', bg = '#dcfce7';
+  if (bmi < 18.5) { status = 'Underweight'; color = '#60a5fa'; bg = '#eff6ff'; }
+  else if (bmi > 25 && bmi <= 30) { status = 'Overweight'; color = 'var(--orange)'; bg = '#fff7ed'; }
+  else if (bmi > 30) { status = 'Obese'; color = 'var(--red)'; bg = '#fef2f2'; }
+ 
+  const badge = document.getElementById('bmiStatus');
+  badge.style.background = bg; badge.style.color = color;
+  document.getElementById('bmiStatusText').textContent = status;
+ 
+  const pct = Math.min(100, Math.max(0, ((bmi - 16) / 19) * 100));
+  document.getElementById('bmiPointer').style.left = pct + '%';
+ 
+  document.getElementById('bmiCalories').textContent = bmiData.calories ? bmiData.calories + ' kcal' : '—';
+  document.getElementById('bmiDate').textContent = bmiData.date || '—';
+}
+ 
+
+function renderGoals() {
+  const weekStart = getWeekStart();
+  const weekRuns  = runs.filter(r => new Date(r.ts) >= weekStart);
+  const wKm  = weekRuns.reduce((s,r) => s + (r.dist||0), 0);
+  const wCal = weekRuns.reduce((s,r) => s + (r.cal||0), 0);
+  const wRuns = weekRuns.length;
+ 
+  const pDist = Math.min(100, Math.round((wKm  / GOALS.km)   * 100));
+  const pCal  = Math.min(100, Math.round((wCal / GOALS.cal)  * 100));
+  const pSess = Math.min(100, Math.round((wRuns/ GOALS.runs) * 100));
+  const overall = Math.round((pDist + pCal + pSess) / 3);
+ 
+  setTimeout(() => {
+    document.getElementById('distBar').style.width = pDist + '%';
+    document.getElementById('calBar').style.width  = pCal  + '%';
+    document.getElementById('sessBar').style.width = pSess + '%';
+  }, 300);
+ 
+  document.getElementById('distGoalPct').textContent = pDist + '%';
+  document.getElementById('calGoalPct').textContent  = pCal  + '%';
+  document.getElementById('sessGoalPct').textContent = pSess + '%';
+  document.getElementById('weeklyPct').textContent   = overall + '% done';
+}
+ 
+function getWeekStart() {
+  const d = new Date();
+  d.setDate(d.getDate() - d.getDay());
+  d.setHours(0,0,0,0);
+  return d;
+}
+ 
+
+function renderChart() {
+  const today = new Date().getDay();
+  const weekData = Array(7).fill(0);
+ 
+  const weekStart = getWeekStart();
+  runs.forEach(r => {
+    const d = new Date(r.ts);
+    if (d >= weekStart) weekData[d.getDay()] += r.dist || 0;
+  });
+ 
+  const maxVal = Math.max(...weekData, 1);
+  const wrap = document.getElementById('chartBars');
+  wrap.innerHTML = '';
+ 
+  weekData.forEach((val, i) => {
+    const pct = Math.round((val / maxVal) * 100);
+    const isToday = i === today;
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    col.innerHTML = `
+      <div class="bar ${isToday ? 'active' : ''}"
+           style="height:${Math.max(pct,4)}%;background:${isToday?'var(--blue)':'#e2e8f0'}"
+           data-val="${val.toFixed(1)} km"></div>
+      <div class="bar-label">${DAYS[i]}</div>`;
+    wrap.appendChild(col);
+  });
+}
+ 
+
+function renderRecentRuns() {
+  const list = document.getElementById('runList');
+  if (!runs.length) {
+    list.innerHTML = `<div style="padding:32px 24px;text-align:center;color:var(--muted);font-size:14px;">No runs logged yet.<br>Hit <strong>+ Log a Run</strong> to get started!</div>`;
+    return;
+  }
+ 
+  const recent = [...runs].sort((a,b) => b.ts - a.ts).slice(0,5);
+  list.innerHTML = recent.map(r => {
+    const d = new Date(r.ts);
+    const label = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const pace  = r.dur && r.dist ? (r.dur / r.dist).toFixed(1) : '—';
+    return `
+    <div class="run-item">
+      <div class="run-icon">🏃</div>
+      <div class="run-info">
+        <div class="run-name">${r.notes || 'Running session'}</div>
+        <div class="run-meta">${label} · ${r.dur} min · ${pace} min/km</div>
+      </div>
+      <div style="text-align:right">
+        <div class="run-dist">${r.dist} km</div>
+        <div class="run-cal">${r.cal} cal</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+ 
+
+function openModal()  { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+ 
+function saveRun() {
+  const dist  = parseFloat(document.getElementById('mDist').value);
+  const dur   = parseInt(document.getElementById('mDur').value);
+  const cal   = parseInt(document.getElementById('mCal').value);
+  const notes = document.getElementById('mNotes').value.trim();
+ 
+  if (!dist || !dur || !cal) { alert('Please fill in distance, duration, and calories.'); return; }
+ 
+  runs.push({ dist, dur, cal, notes, ts: Date.now() });
+  localStorage.setItem('km_runs', JSON.stringify(runs));
+ 
+
+  fetch('tracker.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ distance_km: dist, duration_minutes: dur, calories_burned: cal, notes })
+  }).catch(() => {}); 
+ 
+  closeModal();
+  document.getElementById('mDist').value = '';
+  document.getElementById('mDur').value  = '';
+  document.getElementById('mCal').value  = '';
+  document.getElementById('mNotes').value = '';
+ 
+  renderStats();
+  renderGoals();
+  renderChart();
+  renderRecentRuns();
+  showToast('✓ Run logged successfully!');
+}
+ 
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+ 
+
+function logout() {
+  fetch('logout.php', { method:'POST' }).catch(()=>{});
+  localStorage.removeItem('user');
+  window.location.href = 'login.html';
+}
+ 
+function loadFromBackend() {
+  fetch('bmi.php')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.results?.length) {
+        const latest = data.results[0];
+        bmiData = {
+          bmi: latest.bmi,
+          calories: latest.daily_calories,
+          date: new Date(latest.recorded_at).toLocaleDateString('en-US',{month:'short',day:'numeric'})
+        };
+        localStorage.setItem('km_bmi', JSON.stringify(bmiData));
+        renderBMI();
+      }
+    }).catch(() => {});
+ 
+  fetch('tracker.php')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.logs?.length) {
+        runs = data.logs.map(l => ({
+          dist: parseFloat(l.distance_km),
+          dur:  l.duration_minutes,
+          cal:  l.calories_burned,
+          notes: l.notes,
+          ts: new Date(l.logged_at).getTime()
+        }));
+        localStorage.setItem('km_runs', JSON.stringify(runs));
+        renderStats();
+        renderGoals();
+        renderChart();
+        renderRecentRuns();
+      }
+    }).catch(() => {});
+}
+ 
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+ 
+init();
+loadFromBackend();
+</script>
+</body>
+</html>
+ 
